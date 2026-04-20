@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Apple Freshness Classification System</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body>
+  <header class="hero-wrap">
+    <div class="container hero">
+      <div>
+        <p class="eyebrow">Machine Learning Image Classification</p>
+        <h1>Apple Freshness Classification System</h1>
+        <p class="hero-text">
+          A simple and formal web application that classifies uploaded apple images as either fresh or rotten
+          using your trained Random Forest model and the same handcrafted feature extraction pipeline used in your notebook.
+        </p>
+        <a href="#predict" class="btn btn-light">Run Prediction</a>
+      </div>
+      <div class="hero-card">
+        <h3>Project Summary</h3>
+        <ul>
+          <li><strong>Model:</strong> Random Forest</li>
+          <li><strong>Classes:</strong> Fresh and Rotten</li>
+          <li><strong>Feature Types:</strong> RGB, HSV, LAB, GLCM, edge density</li>
+          <li><strong>Deployment Target:</strong> Render</li>
+        </ul>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="section">
+      <div class="container">
+        <h2>About the Project</h2>
+        <p class="section-subtitle">
+          This system applies traditional machine learning for apple image classification. It extracts color,
+          texture, and edge-based features from an uploaded image, applies the saved preprocessing pipeline,
+          and returns the model prediction through a Flask backend.
+        </p>
+        <div class="grid grid-3">
+          <article class="card">
+            <h3>Objective</h3>
+            <p>To automatically determine whether an apple image belongs to the fresh or rotten category.</p>
+          </article>
+          <article class="card">
+            <h3>Model Basis</h3>
+            <p>The deployed backend follows the same imputer, scaler, selector, label encoder, and model flow used during training.</p>
+          </article>
+          <article class="card">
+            <h3>Use Case</h3>
+            <p>Suitable for laboratory demonstrations, academic presentations, and a simple machine learning deployment portfolio.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-alt">
+      <div class="container">
+        <h2>Model Performance</h2>
+        <p class="section-subtitle">
+          Based on the confusion matrix you shared, the model performs better in detecting rotten apples than fresh apples.
+        </p>
+        <div class="grid grid-2">
+          <article class="card metric-card">
+            <div class="metric">73.6%</div>
+            <p>Overall test accuracy from 309 correct predictions out of 420 test samples.</p>
+          </article>
+          <article class="card">
+            <h3>Confusion Matrix Summary</h3>
+            <div class="mini-grid">
+              <div class="mini-box"><strong>113</strong><span>Fresh → Fresh</span></div>
+              <div class="mini-box"><strong>97</strong><span>Fresh → Rotten</span></div>
+              <div class="mini-box"><strong>14</strong><span>Rotten → Fresh</span></div>
+              <div class="mini-box"><strong>196</strong><span>Rotten → Rotten</span></div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="predict">
+      <div class="container narrow">
+        <h2>Try the Classifier</h2>
+        <p class="section-subtitle">
+          Upload an apple image in JPG, JPEG, or PNG format to generate a prediction using your trained backend.
+        </p>
+
+        <div class="card upload-card">
+          <form method="POST" enctype="multipart/form-data" class="upload-form">
+            <label for="image" class="upload-label">Choose Apple Image</label>
+            <input id="image" name="image" type="file" accept=".jpg,.jpeg,.png,image/*" required />
+            <button type="submit" class="btn btn-primary">Predict Image</button>
+          </form>
+
+          {% if error %}
+            <div class="alert error">{{ error }}</div>
+          {% endif %}
+
+          {% if prediction %}
+            <div class="result-card {{ prediction|lower }}">
+              <p class="result-label">Prediction Result</p>
+              <h3>{{ prediction }}</h3>
+              <p><strong>File:</strong> {{ filename }}</p>
+              {% if confidence is not none %}
+                <p><strong>Confidence:</strong> {{ confidence }}%</p>
+              {% endif %}
+              {% if selected_features_count %}
+                <p><strong>Selected Features Used:</strong> {{ selected_features_count }}</p>
+              {% endif %}
+            </div>
+
+            {% if class_probabilities %}
+              <div class="card probabilities">
+                <h3>Class Probabilities</h3>
+                {% for item in class_probabilities %}
+                  <div class="prob-row">
+                    <div class="prob-header">
+                      <span>{{ item.label }}</span>
+                      <span>{{ item.value }}%</span>
+                    </div>
+                    <div class="prob-bar-track">
+                      <div class="prob-bar" style="width: {{ item.value }}%;"></div>
+                    </div>
+                  </div>
+                {% endfor %}
+              </div>
+            {% endif %}
+          {% endif %}
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      Apple Freshness Classification System • Flask + Render Deployment Ready
+    </div>
+  </footer>
+</body>
+</html>
